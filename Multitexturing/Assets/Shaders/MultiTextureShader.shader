@@ -1,27 +1,27 @@
 ﻿Shader "Custom/MultiTextureShader" {
 	Properties {
 		[Header(Sub Material 0 (Base Sub Material))]
-		[NoScaleOffset] _diff0 ("Diffuse", 2D) = "white" {}
+		_diff0 ("Diffuse", 2D) = "white" {}
 		[NoScaleOffset] [Normal] _norm0 ("Normal", 2D) = "" {}
 		_metal0 ("Metallic", Range(0,1)) = 0.0
 		_gloss0 ("Smoothness", Range(0,1)) = 0.5
 
 		[Header(Sub Material 1)]
-		[NoScaleOffset] _mask1 ("Mask", 2D) = "black" {}
+		_mask1 ("Mask", 2D) = "black" {}
 		[NoScaleOffset] _diff1 ("Diffuse", 2D) = "white" {}
 		[NoScaleOffset] [Normal] _norm1 ("Normal", 2D) = "" {}
 		_metal1 ("Metallic", Range(0,1)) = 0.0
 		_gloss1 ("Smoothness", Range(0,1)) = 0.5
 
 		[Header(Sub Material 2)]
-		[NoScaleOffset] _mask2 ("Mask", 2D) = "black" {}
+		_mask2 ("Mask", 2D) = "black" {}
 		[NoScaleOffset] _diff2 ("Diffuse", 2D) = "white" {}
 		[NoScaleOffset] [Normal] _norm2 ("Normal", 2D) = "" {}
 		_metal2 ("Metallic", Range(0,1)) = 0.0
 		_gloss2 ("Smoothness", Range(0,1)) = 0.5
 
 		[Header(Sub Material 3)]
-		[NoScaleOffset] _mask3 ("Mask", 2D) = "black" {}
+		_mask3 ("Mask", 2D) = "black" {}
 		[NoScaleOffset] _diff3 ("Diffuse", 2D) = "white" {}
 		[NoScaleOffset] [Normal] _norm3 ("Normal", 2D) = "" {}
 		_metal3 ("Metallic", Range(0,1)) = 0.0
@@ -65,6 +65,9 @@
 
 		struct Input {
 			float2 uv_diff0;
+			float2 uv_mask1;
+			float2 uv_mask2;
+			float2 uv_mask3;
 		};
 
 		// Surface Function
@@ -77,20 +80,20 @@
 			//###################
 			fixed3 diffuse = lerp(
 				tex2D (_diff0, IN.uv_diff0).rgb,
-				tex2D (_diff1, IN.uv_diff0).rgb,
-				dot(tex2D (_mask1, IN.uv_diff0), grayscalar) * tex2D (_diff1, IN.uv_diff0).a
+				tex2D (_diff1, IN.uv_mask1).rgb,
+				dot(tex2D (_mask1, IN.uv_mask1), grayscalar) * tex2D (_diff1, IN.uv_mask1).a
 			);
 
 			diffuse = lerp(
 				diffuse,
-				tex2D (_diff2, IN.uv_diff0).rgb,
-				dot(tex2D (_mask2, IN.uv_diff0), grayscalar) * tex2D (_diff2, IN.uv_diff0).a
+				tex2D (_diff2, IN.uv_mask2).rgb,
+				dot(tex2D (_mask2, IN.uv_mask2), grayscalar) * tex2D (_diff2, IN.uv_mask2).a
 			);
 
 			diffuse = lerp(
 				diffuse,
-				tex2D (_diff3, IN.uv_diff0).rgb,
-				dot(tex2D (_mask3, IN.uv_diff0), grayscalar) * tex2D (_diff3, IN.uv_diff0).a
+				tex2D (_diff3, IN.uv_mask3).rgb,
+				dot(tex2D (_mask3, IN.uv_mask3), grayscalar) * tex2D (_diff3, IN.uv_mask3).a
 			);
 
 			//###################
@@ -98,20 +101,20 @@
 			//###################
 			fixed3 normal = lerp(
 				UnpackNormal(tex2D (_norm0, IN.uv_diff0)).rgb,
-				UnpackNormal(tex2D (_norm1, IN.uv_diff0)).rgb,
-				dot(tex2D (_mask1, IN.uv_diff0).rgb, grayscalar) * tex2D (_norm1, IN.uv_diff0).a
+				UnpackNormal(tex2D (_norm1, IN.uv_mask1)).rgb,
+				dot(tex2D (_mask1, IN.uv_mask1).rgb, grayscalar) * tex2D (_norm1, IN.uv_mask1).a
 			);
 
 			normal = lerp(
 				normal.rgb,
-				UnpackNormal(tex2D (_norm2, IN.uv_diff0)).rgb,
-				dot(tex2D (_mask2, IN.uv_diff0).rgb, grayscalar) * tex2D (_norm2, IN.uv_diff0).a
+				UnpackNormal(tex2D (_norm2, IN.uv_mask2)).rgb,
+				dot(tex2D (_mask2, IN.uv_mask2).rgb, grayscalar) * tex2D (_norm2, IN.uv_mask2).a
 			);
 
 			normal = lerp(
 				normal.rgb,
-				UnpackNormal(tex2D (_norm3, IN.uv_diff0)).rgb,
-				dot(tex2D (_mask3, IN.uv_diff0).rgb, grayscalar) * tex2D (_norm2, IN.uv_diff0).a
+				UnpackNormal(tex2D (_norm3, IN.uv_mask3)).rgb,
+				dot(tex2D (_mask3, IN.uv_mask3).rgb, grayscalar) * tex2D (_norm2, IN.uv_mask3).a
 			);
 
 			//###################
@@ -120,19 +123,19 @@
 			fixed3 metal = lerp(
 				_metal0,
 				_metal1,
-				dot(tex2D (_mask1, IN.uv_diff0).rgb, grayscalar)
+				dot(tex2D (_mask1, IN.uv_mask1).rgb, grayscalar)
 			);
 
 			metal = lerp(
 				metal,
 				_metal2,
-				dot(tex2D (_mask2, IN.uv_diff0).rgb, grayscalar)
+				dot(tex2D (_mask2, IN.uv_mask2).rgb, grayscalar)
 			);
 
 			metal = lerp(
 				metal,
 				_metal3,
-				dot(tex2D (_mask3, IN.uv_diff0).rgb, grayscalar)
+				dot(tex2D (_mask3, IN.uv_mask3).rgb, grayscalar)
 			);
 
 			//###################
@@ -141,19 +144,19 @@
 			fixed3 gloss = lerp(
 				_gloss0,
 				_gloss1,
-				dot(tex2D (_mask1, IN.uv_diff0).rgb, grayscalar)
+				dot(tex2D (_mask1, IN.uv_mask1).rgb, grayscalar)
 			);
 
 			gloss = lerp(
 				gloss,
 				_gloss2,
-				dot(tex2D (_mask2, IN.uv_diff0).rgb, grayscalar)
+				dot(tex2D (_mask2, IN.uv_mask2).rgb, grayscalar)
 			);
 
 			gloss = lerp(
 				gloss,
 				_gloss3,
-				dot(tex2D (_mask3, IN.uv_diff0).rgb, grayscalar)
+				dot(tex2D (_mask3, IN.uv_mask3).rgb, grayscalar)
 			);
 
 
