@@ -97,7 +97,7 @@ Material:
           name: _mask1
         second:
           m_Texture: {fileID: 2800000, guid: 666f48d85b3c2af41aa363d74529b6da, type: 3}
-          m_Scale: {x: 1, y: 1}
+          m_Scale: {x: 3, y: 3}
           m_Offset: {x: 0, y: 0}
       data:
         first:
@@ -117,7 +117,7 @@ Material:
         first:
           name: _mask2
         second:
-          m_Texture: {fileID: 2800000, guid: 52df9b4785d40b94bb3b33fef9957a20, type: 3}
+          m_Texture: {fileID: 0}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
       data:
@@ -131,7 +131,7 @@ Material:
         first:
           name: _norm2
         second:
-          m_Texture: {fileID: 2800000, guid: a5cbc20513358694bb6cd0fa3db6078a, type: 3}
+          m_Texture: {fileID: 0}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
       data:
@@ -180,7 +180,7 @@ Material:
         first:
           name: _emit2
         second:
-          m_Texture: {fileID: 2800000, guid: 1426d4694c26aa04da521b6b8a9ee5e5, type: 3}
+          m_Texture: {fileID: 0}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
     m_Floats:
