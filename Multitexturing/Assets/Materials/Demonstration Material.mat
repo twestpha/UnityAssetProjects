@@ -6,9 +6,9 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Tutorial Material
-  m_Shader: {fileID: 4800000, guid: c5603e853bf05b74ca3dc54e573830f7, type: 3}
-  m_ShaderKeywords: _TILE3_ON
+  m_Name: Demonstration Material
+  m_Shader: {fileID: 4800000, guid: 8742fd135b8195847b20859d4385665e, type: 3}
+  m_ShaderKeywords: 
   m_LightmapFlags: 5
   m_CustomRenderQueue: 2000
   stringTagMap: {}
@@ -117,14 +117,14 @@ Material:
         first:
           name: _mask2
         second:
-          m_Texture: {fileID: 0}
+          m_Texture: {fileID: 2800000, guid: 52df9b4785d40b94bb3b33fef9957a20, type: 3}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
       data:
         first:
           name: _diff2
         second:
-          m_Texture: {fileID: 0}
+          m_Texture: {fileID: 2800000, guid: 766ec102059b37440b701de8b649de03, type: 3}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
       data:
@@ -138,8 +138,8 @@ Material:
         first:
           name: _mask3
         second:
-          m_Texture: {fileID: 2800000, guid: cc9eff25297c7ca48a9f200962922f2f, type: 3}
-          m_Scale: {x: 5, y: 5}
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
       data:
         first:
@@ -251,11 +251,11 @@ Material:
       data:
         first:
           name: _metal2
-        second: 0
+        second: 0.79
       data:
         first:
           name: _gloss2
-        second: 0
+        second: 0.64
       data:
         first:
           name: _metal3
@@ -283,7 +283,7 @@ Material:
       data:
         first:
           name: _tile3
-        second: 1
+        second: 0
     m_Colors:
       data:
         first:
