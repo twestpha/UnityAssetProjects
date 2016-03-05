@@ -95,19 +95,19 @@
 			fixed3 diffuse = lerp(
 				tex2D (_diff0, IN.uv_diff0).rgb,
 				tex2D (_diff1, IN.uv_mask1).rgb,
-				dot(tex2D (_mask1, uv_final_mask1).rgb, grayscalar) * tex2D (_diff1, uv_final_mask1).a
+				dot(tex2D (_mask1, uv_final_mask1).rgb, grayscalar) * tex2D (_diff1, IN.uv_mask1).a
 			);
 
 			diffuse = lerp(
 				diffuse,
 				tex2D (_diff2, IN.uv_mask2).rgb,
-				dot(tex2D (_mask2, uv_final_mask2).rgb, grayscalar) * tex2D (_diff2, uv_final_mask2).a
+				dot(tex2D (_mask2, uv_final_mask2).rgb, grayscalar) * tex2D (_diff2, IN.uv_mask2).a
 			);
 
 			diffuse = lerp(
 				diffuse,
 				tex2D (_diff3, IN.uv_mask3).rgb,
-				dot(tex2D (_mask3, uv_final_mask3).rgb, grayscalar) * tex2D (_diff3, uv_final_mask3).a
+				dot(tex2D (_mask3, uv_final_mask3).rgb, grayscalar) * tex2D (_diff3, IN.uv_mask3).a
 			);
 
 			//###################
@@ -116,19 +116,19 @@
 			fixed3 normal = lerp(
 				UnpackNormal(tex2D (_norm0, IN.uv_diff0)).rgb,
 				UnpackNormal(tex2D (_norm1, IN.uv_mask1)).rgb,
-				dot(tex2D (_mask1, uv_final_mask1).rgb, grayscalar) * tex2D (_norm1, uv_final_mask1).a
+				dot(tex2D (_mask1, uv_final_mask1).rgb, grayscalar) * tex2D (_norm1, IN.uv_mask1).a
 			);
 
 			normal = lerp(
 				normal.rgb,
 				UnpackNormal(tex2D (_norm2, IN.uv_mask2)).rgb,
-				dot(tex2D (_mask2, uv_final_mask2).rgb, grayscalar) * tex2D (_norm2, uv_final_mask2).a
+				dot(tex2D (_mask2, uv_final_mask2).rgb, grayscalar) * tex2D (_norm2, IN.uv_mask2).a
 			);
 
 			normal = lerp(
 				normal.rgb,
 				UnpackNormal(tex2D (_norm3, IN.uv_mask3)).rgb,
-				dot(tex2D (_mask3, uv_final_mask3).rgb, grayscalar) * tex2D (_norm2, uv_final_mask3).a
+				dot(tex2D (_mask3, uv_final_mask3).rgb, grayscalar) * tex2D (_norm2, IN.uv_mask3).a
 			);
 
 			//###################
