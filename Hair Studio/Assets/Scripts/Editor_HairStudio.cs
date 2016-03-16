@@ -31,8 +31,13 @@ public class Editor_HairStudio : Editor {
 
     // TEMPORARY STUFF
     Vector3 temp_vector;
+    string texture;
+    Texture2D inputTexture;
 
     void OnEnable(){
+        texture = "GUI/blue_pellet";
+        inputTexture = (Texture2D)Resources.Load(texture);
+
         _target = (HairStudio)target;
         // _serial = new SerializedObject(target);
 
@@ -86,6 +91,7 @@ public class Editor_HairStudio : Editor {
 
     public void OnSceneGUI() {
 
+        // Handling Input
         int controlID = GUIUtility.GetControlID(FocusType.Passive);
         Event currentEvent = Event.current;
         EventType currentEventType = currentEvent.GetTypeForControl(controlID);
@@ -116,6 +122,13 @@ public class Editor_HairStudio : Editor {
 
             EditorUtility.SetDirty(_target);
         }
+
+        // Drawing GUI
+        Handles.BeginGUI();
+        // get vector3's screenspace
+        Vector3 screenPos = Camera.current.WorldToScreenPoint(temp_vector);
+        GUI.DrawTexture(new Rect(screenPos.x - 3, Screen.height - screenPos.y - 40, 5, 5), inputTexture);
+        Handles.EndGUI();
     }
 
     private void beginCreatingHairStrand(){
@@ -164,6 +177,7 @@ public class Editor_HairStudio : Editor {
             // Undo.RegisterUndo (target, "Add Path Node");
             // ((Path)target).AddNode (hitInfo.point);
             Debug.Log("Hit something!");
+            temp_vector = hit.point;
         }
 
         // Clean up
