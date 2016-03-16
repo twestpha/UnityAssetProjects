@@ -3,20 +3,7 @@ using System.Collections;
 
  public class HairStudio : MonoBehaviour {
 
-	 public Transform[] strands;
-
-    //  public enum cakeTypes
-    //  {
-    //      Chocolate,
-    //      Vanilla,
-    //      Lemon
-    //  }
-
-    //  public bool isDelicious;
-    //  public float amountOfChocolate;
-    //  public int randomNumber;
-    //  public cakeTypes cakeT;
-    //  public Color cakeColor;
+	 public Strand[] strands;
 
      void Start(){
          //TODO Start doing those cakes!

@@ -5,6 +5,15 @@ using System.Collections;
 [CustomEditor(typeof(HairStudio))]
 public class Editor_HairStudio : Editor {
 
+    // Editing state Enum
+    private enum EditingState {
+        notEditing,
+        creatingStrandStartPoint,
+        creatingStrandControlPoint,
+        editingStrandPoints
+    }
+
+    // Object
     private HairStudio _target;
     private SerializedObject _serial;
     private SerializedProperty _serialProperty;
@@ -15,23 +24,16 @@ public class Editor_HairStudio : Editor {
     private string strandStartPointPickingString = "Done (Esc)";
     private string strandStartPointButtonString;
 
-    // Editing state
-    private enum EditingState {
-        notEditing,
-        creatingStrandStartPoint,
-        creatingStrandControlPoint,
-        editingStrandPoints
-     }
+    // Editing State
+    private EditingState currentEditingState;
 
-     private EditingState currentEditingState;
+    Strand currentStrand;
 
     void OnEnable(){
         _target = (HairStudio)target;
         _serial = new SerializedObject(target);
 
-        isPickingStrandStartPoint = false;
         strandStartPointButtonString = strandStartPointNotPickingString;
-
         currentEditingState = EditingState.notEditing;
     }
 
@@ -45,17 +47,19 @@ public class Editor_HairStudio : Editor {
 
         // Emission Point Picking Button
         if(GUILayout.Button(strandStartPointButtonString)){
-            isPickingStrandStartPoint = !isPickingStrandStartPoint;
-            if(isPickingStrandStartPoint){
-                strandStartPointButtonString = strandStartPointPickingString;
-                currentEditingState = EditingState.creatingStrandStartPoint;
+            if(currentEditingState == EditingState.notEditing){
+                beginCreatingHairStrand();
             } else {
-                strandStartPointButtonString = strandStartPointNotPickingString;
-                currentEditingState = EditingState.notEditing;
+                endCreatingHairStrand();
             }
         }
 
+        if(GUILayout.Button("Edit Hair Strand (D)")){
+
+        }
+
         // Emission Points
+        // Loop over these, maybe? For more granular control, etc
         _serialProperty = _serial.FindProperty("strands");
         EditorGUILayout.PropertyField(_serialProperty, new GUIContent(" Strands"), true);
         _serial.ApplyModifiedProperties();
@@ -69,26 +73,6 @@ public class Editor_HairStudio : Editor {
         // Physics section
         //#############################################################################################
         GUILayout.Label ("Physics", EditorStyles.boldLabel);
-
-        // Lots of spare GUI crap - use it or lose it
-
-        // _target.isDelicious =  EditorGUILayout.Toggle("Is it Delicous Cake?", _target.isDelicious); // Our bool
-        // _target.amountOfChocolate = EditorGUILayout.Slider("How much Chocolate?", _target.amountOfChocolate, 0.0f, 10.0f); // A slider to make thing better looking
-        //
-        // // There is now ay to have a cake without chocolate
-        // if(_target.amountOfChocolate == 0)
-        // {
-        //  EditorGUILayout.HelpBox("THERE IS NO CHOCOLATE IN THIS CAKE", MessageType.Error);
-        // }
-        //
-        // _target.randomNumber = EditorGUILayout.IntField("Just a number", _target.randomNumber); // Common INT field
-        // _target.cakeColor = EditorGUILayout.ColorField("Color", _target.cakeColor); // Color Field
-        // _target.cakeT = (HairStudio.cakeTypes)EditorGUILayout.EnumPopup("Cake type", _target.cakeT); // Enum Field - It needs proper casting
-        //
-        // if(GUILayout.Button("DO CAKE"))
-        // {
-        //   _target.BakeTheCake();
-        // }
 
         GUILayout.EndVertical();
 
@@ -114,8 +98,31 @@ public class Editor_HairStudio : Editor {
                 GUIUtility.hotControl = 0;
                 currentEvent.Use();
             }
+        } else if (currentEventType == EventType.KeyDown){
+            // Keyboard shortcuts
+            if(currentEvent.keyCode == KeyCode.C){
+                beginCreatingHairStrand();
+            } else if (currentEvent.keyCode == KeyCode.D){
+                Debug.Log("D Pressed event");
+            } else if (currentEvent.keyCode == KeyCode.Escape){
+                if(currentEditingState == EditingState.creatingStrandControlPoint || currentEditingState == EditingState.creatingStrandStartPoint){
+                    endCreatingHairStrand();
+                }
+
+            }
         }
-        // TODO add an "esc" button as well (maybe keyboard shortcuts all around?)
+    }
+
+    private void beginCreatingHairStrand(){
+        strandStartPointButtonString = strandStartPointPickingString;
+        currentEditingState = EditingState.creatingStrandStartPoint;
+    }
+
+    private void endCreatingHairStrand(){
+        strandStartPointButtonString = strandStartPointNotPickingString;
+        currentEditingState = EditingState.notEditing;
+
+        // Other special things like saving strand
     }
 
     private void clickedOnSceneWhileEditing(){
@@ -124,7 +131,7 @@ public class Editor_HairStudio : Editor {
                 createStrandStartPoint();
                 break;
             case EditingState.creatingStrandControlPoint:
-                Debug.Log("Creating Strand Control Point");
+                createStrandControlPoint();
                 break;
         }
     }
@@ -132,6 +139,12 @@ public class Editor_HairStudio : Editor {
     private void createStrandStartPoint(){
         Debug.Log("Creating Strand Start Point");
         currentEditingState = EditingState.creatingStrandControlPoint;
-        
+
+    }
+
+    private void createStrandControlPoint(){
+        Debug.Log("Creating Strand Control Point");
+
+        // Other stuff too
     }
 }
