@@ -9,41 +9,55 @@ public class Editor_HairStudio : Editor {
     private SerializedObject _serial;
     private SerializedProperty _serialProperty;
 
-    // Emission Point Picking
-    private bool isPickingEmissionPoint;
-    private string emissionPointNotPickingString = "Add Emission Point(s)";
-    private string emissionPointPickingString = "Done";
-    private string emissionPointButtonString;
+    // Strand Creation Button
+    private bool isPickingStrandStartPoint;
+    private string strandStartPointNotPickingString = "Create Hair Strand (C)";
+    private string strandStartPointPickingString = "Done (Esc)";
+    private string strandStartPointButtonString;
 
-    void OnEnable() {
+    // Editing state
+    private enum EditingState {
+        notEditing,
+        creatingStrandStartPoint,
+        creatingStrandControlPoint,
+        editingStrandPoints
+     }
+
+     private EditingState currentEditingState;
+
+    void OnEnable(){
         _target = (HairStudio)target;
         _serial = new SerializedObject(target);
 
-        isPickingEmissionPoint = false;
-        emissionPointButtonString = emissionPointNotPickingString;
+        isPickingStrandStartPoint = false;
+        strandStartPointButtonString = strandStartPointNotPickingString;
+
+        currentEditingState = EditingState.notEditing;
     }
 
-    public override void OnInspectorGUI() {
+    public override void OnInspectorGUI(){
         GUILayout.BeginVertical();
 
         //#############################################################################################
         // Emission section
         //#############################################################################################
-        GUILayout.Label ("Emission", EditorStyles.boldLabel);
+        GUILayout.Label ("Hair Strands", EditorStyles.boldLabel);
 
         // Emission Point Picking Button
-        if(GUILayout.Button(emissionPointButtonString)) {
-            isPickingEmissionPoint = !isPickingEmissionPoint;
-            if(isPickingEmissionPoint) {
-                emissionPointButtonString = emissionPointPickingString;
+        if(GUILayout.Button(strandStartPointButtonString)){
+            isPickingStrandStartPoint = !isPickingStrandStartPoint;
+            if(isPickingStrandStartPoint){
+                strandStartPointButtonString = strandStartPointPickingString;
+                currentEditingState = EditingState.creatingStrandStartPoint;
             } else {
-                emissionPointButtonString = emissionPointNotPickingString;
+                strandStartPointButtonString = strandStartPointNotPickingString;
+                currentEditingState = EditingState.notEditing;
             }
         }
 
         // Emission Points
-        _serialProperty = _serial.FindProperty("emissionPoints");
-        EditorGUILayout.PropertyField(_serialProperty, new GUIContent(" Emission Points"), true);
+        _serialProperty = _serial.FindProperty("strands");
+        EditorGUILayout.PropertyField(_serialProperty, new GUIContent(" Strands"), true);
         _serial.ApplyModifiedProperties();
 
         //#############################################################################################
@@ -78,25 +92,46 @@ public class Editor_HairStudio : Editor {
 
         GUILayout.EndVertical();
 
-        if(GUI.changed) {
+        if(GUI.changed){
             EditorUtility.SetDirty(_target);
         }
     }
 
-    public void OnSceneGUI(){
+    public void OnSceneGUI() {
+
         int controlID = GUIUtility.GetControlID(FocusType.Passive);
         Event currentEvent = Event.current;
+        EventType currentEventType = currentEvent.GetTypeForControl(controlID);
 
-        if(currentEvent.GetTypeForControl(controlID) == EventType.MouseDown && currentEvent.button == 0){
-            if(isPickingEmissionPoint) {
+        if(currentEventType == EventType.MouseDown){
+            if(currentEvent.button == 0 && currentEditingState != EditingState.notEditing){
+                clickedOnSceneWhileEditing();
                 GUIUtility.hotControl = controlID;
-                SelectedEmissionPoint();
+                currentEvent.Use();
+            }
+        } else if (currentEventType == EventType.MouseUp){
+            if(currentEvent.button == 0 && currentEditingState != EditingState.notEditing){
+                GUIUtility.hotControl = 0;
                 currentEvent.Use();
             }
         }
+        // TODO add an "esc" button as well (maybe keyboard shortcuts all around?)
     }
 
-    public void SelectedEmissionPoint(){
-        Debug.Log("Clicked while picking with LMB!");
+    private void clickedOnSceneWhileEditing(){
+        switch(currentEditingState){
+            case EditingState.creatingStrandStartPoint:
+                createStrandStartPoint();
+                break;
+            case EditingState.creatingStrandControlPoint:
+                Debug.Log("Creating Strand Control Point");
+                break;
+        }
+    }
+
+    private void createStrandStartPoint(){
+        Debug.Log("Creating Strand Start Point");
+        currentEditingState = EditingState.creatingStrandControlPoint;
+        
     }
 }

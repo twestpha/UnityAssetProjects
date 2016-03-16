@@ -3,7 +3,7 @@ using System.Collections;
 
  public class HairStudio : MonoBehaviour {
 
-	 public Transform[] emissionPoints;
+	 public Transform[] strands;
 
     //  public enum cakeTypes
     //  {
@@ -18,8 +18,7 @@ using System.Collections;
     //  public cakeTypes cakeT;
     //  public Color cakeColor;
 
-     void Start ()
-     {
+     void Start(){
          //TODO Start doing those cakes!
      }
 
