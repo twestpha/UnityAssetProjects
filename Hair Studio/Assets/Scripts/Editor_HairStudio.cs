@@ -29,9 +29,12 @@ public class Editor_HairStudio : Editor {
 
     Strand currentStrand;
 
+    // TEMPORARY STUFF
+    Vector3 temp_vector;
+
     void OnEnable(){
         _target = (HairStudio)target;
-        _serial = new SerializedObject(target);
+        // _serial = new SerializedObject(target);
 
         strandStartPointButtonString = strandStartPointNotPickingString;
         currentEditingState = EditingState.notEditing;
@@ -60,9 +63,9 @@ public class Editor_HairStudio : Editor {
 
         // Emission Points
         // Loop over these, maybe? For more granular control, etc
-        _serialProperty = _serial.FindProperty("strands");
-        EditorGUILayout.PropertyField(_serialProperty, new GUIContent(" Strands"), true);
-        _serial.ApplyModifiedProperties();
+        // _serialProperty = _serial.FindProperty("strands");
+        // EditorGUILayout.PropertyField(_serialProperty, new GUIContent(" Strands"), true);
+        // _serial.ApplyModifiedProperties();
 
         //#############################################################################################
         // Rendering section
@@ -108,8 +111,10 @@ public class Editor_HairStudio : Editor {
                 if(currentEditingState == EditingState.creatingStrandControlPoint || currentEditingState == EditingState.creatingStrandStartPoint){
                     endCreatingHairStrand();
                 }
-
+                // Other states, like saving edited strands
             }
+
+            EditorUtility.SetDirty(_target);
         }
     }
 
@@ -137,14 +142,33 @@ public class Editor_HairStudio : Editor {
     }
 
     private void createStrandStartPoint(){
-        Debug.Log("Creating Strand Start Point");
         currentEditingState = EditingState.creatingStrandControlPoint;
-
+        getWorldCoordinateOnModel();
     }
 
     private void createStrandControlPoint(){
         Debug.Log("Creating Strand Control Point");
 
         // Other stuff too
+    }
+
+    private Vector3 getWorldCoordinateOnModel(){
+        // Add a mesh collider component so we can register click hits
+        _target.AddMeshColliderComponent();
+
+        Ray worldRay = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
+        Debug.Log(Event.current.mousePosition);
+        RaycastHit hit;
+
+        if(Physics.Raycast (worldRay, out hit)){
+            // Undo.RegisterUndo (target, "Add Path Node");
+            // ((Path)target).AddNode (hitInfo.point);
+            Debug.Log("Hit something!");
+        }
+
+        // Clean up
+        _target.RemoveMeshColliderComponent();
+
+        return new Vector3(0, 0, 0);
     }
 }

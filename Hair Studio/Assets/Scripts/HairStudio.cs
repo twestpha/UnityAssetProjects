@@ -6,16 +6,16 @@ using System.Collections;
 	 public Strand[] strands;
 
      void Start(){
-         //TODO Start doing those cakes!
      }
 
-     void Update ()
-     {
-         //TODO Something about cakes!
+     void Update(){
      }
 
-     public void BakeTheCake()
-     {
-         //TODO Bake it!
+     public void AddMeshColliderComponent(){
+         gameObject.AddComponent<MeshCollider>();
+     }
+
+     public void RemoveMeshColliderComponent(){
+         DestroyImmediate(GetComponent<MeshCollider>());
      }
  }
