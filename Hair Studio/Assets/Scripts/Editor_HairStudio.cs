@@ -8,7 +8,6 @@ public class Editor_HairStudio : Editor {
     // Editing state Enum
     private enum EditingState {
         notEditing,
-        creatingStrandStartPoint,
         creatingStrandControlPoint,
         editingStrandPoints
     }
@@ -30,7 +29,6 @@ public class Editor_HairStudio : Editor {
     Strand currentStrand;
 
     // TEMPORARY STUFF
-    Vector3 temp_vector;
     string texture;
     Texture2D inputTexture;
 
@@ -40,6 +38,8 @@ public class Editor_HairStudio : Editor {
 
         _target = (HairStudio)target;
         // _serial = new SerializedObject(target);
+
+        currentStrand = new Strand();
 
         strandStartPointButtonString = strandStartPointNotPickingString;
         currentEditingState = EditingState.notEditing;
@@ -114,7 +114,8 @@ public class Editor_HairStudio : Editor {
             } else if (currentEvent.keyCode == KeyCode.D){
                 Debug.Log("D Pressed event");
             } else if (currentEvent.keyCode == KeyCode.Escape){
-                if(currentEditingState == EditingState.creatingStrandControlPoint || currentEditingState == EditingState.creatingStrandStartPoint){
+                // Handle "cancel" operations depending on state
+                if(currentEditingState == EditingState.creatingStrandControlPoint){
                     endCreatingHairStrand();
                 }
                 // Other states, like saving edited strands
@@ -125,64 +126,64 @@ public class Editor_HairStudio : Editor {
 
         // Drawing GUI
         Handles.BeginGUI();
-        // get vector3's screenspace
-        Vector3 screenPos = Camera.current.WorldToScreenPoint(temp_vector);
-        GUI.DrawTexture(new Rect(screenPos.x - 3, Screen.height - screenPos.y - 40, 5, 5), inputTexture);
+            if(currentStrand.HasControlPoints()){
+
+                // Draw current strand (Wireframe)
+                for(int i=0; i < currentStrand.ControlPointsCount(); ++i){
+                    Vector3 screenPos = Camera.current.WorldToScreenPoint(currentStrand.getControlPointFromIndex(i));
+                    GUI.DrawTexture(new Rect(screenPos.x - 3, Screen.height - screenPos.y - 40, 5, 5), inputTexture);
+
+                    if(i > 0){
+                        Vector3 screenPos0 = Camera.current.WorldToScreenPoint(currentStrand.getControlPointFromIndex(i));
+                        Vector3 screenPos1 = Camera.current.WorldToScreenPoint(currentStrand.getControlPointFromIndex(i - 1));
+
+                        Vector2 a = new Vector2(screenPos0.x - 3, Screen.height - screenPos0.y - 40);
+                        Vector2 b = new Vector2(screenPos1.x - 3, Screen.height - screenPos1.y - 40);
+
+                        // float width = 1.0f;
+                        // Color color = Color.black;
+                        //
+                        // Drawing.DrawLine(a, b, color, width);
+                    }
+                }
+            }
+
         Handles.EndGUI();
-    }
-
-    private void beginCreatingHairStrand(){
-        strandStartPointButtonString = strandStartPointPickingString;
-        currentEditingState = EditingState.creatingStrandStartPoint;
-    }
-
-    private void endCreatingHairStrand(){
-        strandStartPointButtonString = strandStartPointNotPickingString;
-        currentEditingState = EditingState.notEditing;
-
-        // Other special things like saving strand
     }
 
     private void clickedOnSceneWhileEditing(){
         switch(currentEditingState){
-            case EditingState.creatingStrandStartPoint:
-                createStrandStartPoint();
-                break;
             case EditingState.creatingStrandControlPoint:
                 createStrandControlPoint();
                 break;
         }
     }
 
-    private void createStrandStartPoint(){
+    private void beginCreatingHairStrand(){
+        strandStartPointButtonString = strandStartPointPickingString;
         currentEditingState = EditingState.creatingStrandControlPoint;
-        getWorldCoordinateOnModel();
+    }
+
+    private void endCreatingHairStrand(){
+        strandStartPointButtonString = strandStartPointNotPickingString;
+        currentEditingState = EditingState.notEditing;
+
+        // Other special things like saving strand to the instance data
     }
 
     private void createStrandControlPoint(){
-        Debug.Log("Creating Strand Control Point");
-
-        // Other stuff too
-    }
-
-    private Vector3 getWorldCoordinateOnModel(){
         // Add a mesh collider component so we can register click hits
         _target.AddMeshColliderComponent();
 
         Ray worldRay = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
-        Debug.Log(Event.current.mousePosition);
+        Vector3 normal = worldRay.direction * -1;
         RaycastHit hit;
 
         if(Physics.Raycast (worldRay, out hit)){
-            // Undo.RegisterUndo (target, "Add Path Node");
-            // ((Path)target).AddNode (hitInfo.point);
-            Debug.Log("Hit something!");
-            temp_vector = hit.point;
+            currentStrand.AddControlPointAndNormal(hit.point, normal);
         }
 
         // Clean up
         _target.RemoveMeshColliderComponent();
-
-        return new Vector3(0, 0, 0);
     }
 }
