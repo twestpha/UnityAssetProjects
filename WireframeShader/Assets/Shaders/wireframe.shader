@@ -1,41 +1,49 @@
-﻿Shader "Custom/wireframe" {
+Shader "Custom/WireFrame" {
 	Properties {
-		_Color ("Color", Color) = (1,1,1,1)
-		_MainTex ("Albedo (RGB)", 2D) = "white" {}
-		_Glossiness ("Smoothness", Range(0,1)) = 0.5
-		_Metallic ("Metallic", Range(0,1)) = 0.0
+		_Color ("Line Color", Color) = (1,1,1,1)
+		_MainTex ("Main Texture", 2D) = "white" {}
+		_Thickness ("Line Thickness", Float) = 1
 	}
-	SubShader {
-		Tags { "RenderType"="Opaque" }
-		LOD 200
-		
-		CGPROGRAM
-		// Physically based Standard lighting model, and enable shadows on all light types
-		#pragma surface surf Standard fullforwardshadows
+	SubShader
+	{
+		Pass {
+			Tags { "RenderType"="Opaque" "Queue"="Geometry" }
 
-		// Use shader model 3.0 target, to get nicer looking lighting
-		#pragma target 3.0
+			//Blend SrcAlpha OneMinusSrcAlpha
+			Blend SrcAlpha OneMinusDstAlpha
+			LOD 200
 
-		sampler2D _MainTex;
+			CGPROGRAM
+				#pragma target 5.0
+				#include "UnityCG.cginc"
+				#include "UCLA GameLab Wireframe Functions.cginc"
+				#pragma vertex vert
+				#pragma fragment frag
+				#pragma geometry geom
 
-		struct Input {
-			float2 uv_MainTex;
-		};
+				// Vertex Shader
+				UCLAGL_v2g vert(appdata_base v)
+				{
+					return UCLAGL_vert(v);
+				}
 
-		half _Glossiness;
-		half _Metallic;
-		fixed4 _Color;
+				// Geometry Shader
+				[maxvertexcount(3)]
+				void geom(triangle UCLAGL_v2g p[3], inout TriangleStream<UCLAGL_g2f> triStream)
+				{
+					UCLAGL_geom( p, triStream);
+				}
 
-		void surf (Input IN, inout SurfaceOutputStandard o) {
-			// Albedo comes from a texture tinted by color
-			fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
-			o.Albedo = c.rgb;
-			// Metallic and smoothness come from slider variables
-			o.Metallic = _Metallic;
-			o.Smoothness = _Glossiness;
-			o.Alpha = c.a;
+				// Fragment Shader
+				float4 frag(UCLAGL_g2f input) : COLOR
+				{
+					float4 col = UCLAGL_frag(input);
+					if( col.a < 0.5f ) discard;
+					else col.a = 1.0f;
+
+					return col;
+				}
+			ENDCG
 		}
-		ENDCG
 	}
-	FallBack "Diffuse"
 }
