@@ -28,13 +28,7 @@ public class Editor_HairStudio : Editor {
 
     Strand currentStrand;
 
-    // TEMPORARY STUFF
-    string texture;
-    Texture2D inputTexture;
-
     void OnEnable(){
-        texture = "GUI/blue_pellet";
-        inputTexture = (Texture2D)Resources.Load(texture);
 
         _target = (HairStudio)target;
         // _serial = new SerializedObject(target);
@@ -129,23 +123,7 @@ public class Editor_HairStudio : Editor {
             if(currentStrand.HasControlPoints()){
 
                 // Draw current strand (Wireframe)
-                for(int i=0; i < currentStrand.ControlPointsCount(); ++i){
-                    Vector3 screenPos = Camera.current.WorldToScreenPoint(currentStrand.getControlPointFromIndex(i));
-                    GUI.DrawTexture(new Rect(screenPos.x - 3, Screen.height - screenPos.y - 40, 5, 5), inputTexture);
-
-                    if(i > 0){
-                        Vector3 screenPos0 = Camera.current.WorldToScreenPoint(currentStrand.getControlPointFromIndex(i));
-                        Vector3 screenPos1 = Camera.current.WorldToScreenPoint(currentStrand.getControlPointFromIndex(i - 1));
-
-                        Vector2 a = new Vector2(screenPos0.x - 3, Screen.height - screenPos0.y - 40);
-                        Vector2 b = new Vector2(screenPos1.x - 3, Screen.height - screenPos1.y - 40);
-
-                        // float width = 1.0f;
-                        // Color color = Color.black;
-                        //
-                        // Drawing.DrawLine(a, b, color, width);
-                    }
-                }
+                currentStrand.drawWireframeToGUI();
             }
 
         Handles.EndGUI();
