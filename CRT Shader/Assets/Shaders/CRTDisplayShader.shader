@@ -40,21 +40,21 @@
 			fixed4 frag (v2f i) : SV_Target {
 				// Setup
 				fixed4 fragColor = tex2D(_MainTex, i.uv);
-				float onePixelx = 1.0 / _ScreenParams.x;
-				float onePixely = 1.0 / _ScreenParams.y;
+				float onePixelX = 1.0 / _ScreenParams.x;
+				float onePixelY = 1.0 / _ScreenParams.y;
 
 				// Ajusted Coordinates
-				float xPosScrn = floor((i.screenPos.x * _ScreenParams.x));
-				float yPosScrn = floor((i.screenPos.y * _ScreenParams.y));
-				float xmod = fmod(xPosScrn, 3);
-				float ymod = fmod(yPosScrn, 3);
+				float xPixelPosition = i.uv.x * _ScreenParams.x;
+				float yPixelPosition = i.uv.y * _ScreenParams.y;
+				float xmod = floor(fmod(xPixelPosition, 3));
+				float ymod = floor(fmod(yPixelPosition, 3));
 
 				// Averaging Neighbors
-				float2 plusTwo = float2(i.uv.x + onePixelx * 2.0, i.uv.y - (onePixely * ymod));
-				float2 plusOne = float2(i.uv.x + onePixelx, i.uv.y - (onePixely * ymod));
-				float2 plusNone = float2(i.uv.x, i.uv.y - (onePixely * ymod));
-				float2 minusOne = float2(i.uv.x - onePixelx, i.uv.y - (onePixely * ymod));
-				float2 minusTwo = float2(i.uv.x - onePixelx * 2.0, i.uv.y - (onePixely * ymod));
+				float2 plusTwo = float2(i.uv.x + onePixelX * 2.0, i.uv.y - (onePixelY * ymod));
+				float2 plusOne = float2(i.uv.x + onePixelX, i.uv.y - (onePixelY * ymod));
+				float2 plusNone = float2(i.uv.x, i.uv.y - (onePixelY * ymod));
+				float2 minusOne = float2(i.uv.x - onePixelX, i.uv.y - (onePixelY * ymod));
+				float2 minusTwo = float2(i.uv.x - onePixelX * 2.0, i.uv.y - (onePixelY * ymod));
 
 				fixed4 plusOneFragColor = tex2D(_MainTex, plusOne);
 				fixed4 plusTwoFragColor = tex2D(_MainTex, plusTwo);
@@ -62,28 +62,18 @@
 				fixed4 minusOneFragColor = tex2D(_MainTex, minusOne);
 				fixed4 minusTwoFragColor = tex2D(_MainTex, minusTwo);
 
-				float red = (plusNoneFragColor.r + plusTwoFragColor.r + plusOneFragColor.r + fragColor.r + minusOneFragColor.r + minusTwoFragColor.r)/5.0;
-				float grn = (plusNoneFragColor.g + plusTwoFragColor.g + plusOneFragColor.g + fragColor.g + minusOneFragColor.g + minusTwoFragColor.g)/5.0;
-				float blu = (plusNoneFragColor.b + plusTwoFragColor.b + plusOneFragColor.b + fragColor.b + minusOneFragColor.b + minusTwoFragColor.b)/5.0;
+				float red = (plusTwoFragColor.r + plusOneFragColor.r + plusNoneFragColor.r + minusOneFragColor.r + minusTwoFragColor.r)/5.0;
+				float grn = (plusTwoFragColor.g + plusOneFragColor.g + plusNoneFragColor.g + minusOneFragColor.g + minusTwoFragColor.g)/5.0;
+				float blu = (plusTwoFragColor.b + plusOneFragColor.b + plusNoneFragColor.b + minusOneFragColor.b + minusTwoFragColor.b)/5.0;
+
 
 				if(xmod == 0.0){
 					fragColor = fixed4(red, 0.2, 0.2, 1.0);
-				} else if(xmod > 0.0 && xmod < 2.0){
+				} else if(xmod == 1.0){
 					fragColor = fixed4(0.2, grn, 0.2, 1.0);
 				} else {
 					fragColor = fixed4(0.2, 0.2, blu, 1.0);
 				}
-
-				// Brightness Calculations (from scanline)
-
-				// function that takes position in scan (left to right, top to bottom)
-				// and time to compute brightness from scanline. We want to fix time
-				// instead of using delta-time for perfect simulation no matter what time it is
-
-				//float scanPosition = (i.screenPos.y * _ScreenParams.y) + i.screenPos.x;
-				//float adjustedTime = _CurrentTime;
-				//float brightnessIdx = fmod(scanPosition + adjustedTime, 60);
-				//float brightness = (brightnessIdx / 240.0) + 0.75;
 
 				return fragColor;
 			}
