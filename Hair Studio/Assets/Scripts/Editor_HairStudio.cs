@@ -5,11 +5,17 @@ using System.Collections;
 [CustomEditor(typeof(HairStudio))]
 public class Editor_HairStudio : Editor {
 
-    // Editing state Enum
+    // Enums
     private enum EditingState {
         notEditing,
         creatingStrandControlPoint,
-        editingStrandPoints
+        editingStrandControlPoints
+    }
+
+    private enum RenderingState {
+        LineRendering,
+        GeometryRendering,
+        TexturedRendering
     }
 
     // Object
@@ -23,8 +29,9 @@ public class Editor_HairStudio : Editor {
     private string strandStartPointPickingString = "Done (Esc)";
     private string strandStartPointButtonString;
 
-    // Editing State
+    // States
     private EditingState currentEditingState;
+    private RenderingState currentRenderingState;
 
     Strand currentStrand;
 
@@ -70,6 +77,14 @@ public class Editor_HairStudio : Editor {
         // Rendering section
         //#############################################################################################
         GUILayout.Label ("Rendering", EditorStyles.boldLabel);
+        string[] text = {"Line", "Wireframe", "Textured"};
+
+        currentRenderingState = (RenderingState)GUILayout.SelectionGrid((int)currentRenderingState, text, 3);
+        switch(currentRenderingState){
+        case RenderingState.LineRendering:
+            // something
+            break;
+        }
 
         //#############################################################################################
         // Physics section
@@ -106,7 +121,7 @@ public class Editor_HairStudio : Editor {
             if(currentEvent.keyCode == KeyCode.C){
                 beginCreatingHairStrand();
             } else if (currentEvent.keyCode == KeyCode.D){
-                Debug.Log("D Pressed event");
+                Debug.Log("D Pressed event"); // Toggle editing (later)
             } else if (currentEvent.keyCode == KeyCode.Escape){
                 // Handle "cancel" operations depending on state
                 if(currentEditingState == EditingState.creatingStrandControlPoint){

@@ -6,16 +6,16 @@ public class Strand {
 	private List<Vector3> controlPoints;
 	private List<Vector3> controlNormals;
 
-	// Make these static
-	string texture;
-	Texture2D inputTexture;
+	// Static Resources
+	static Texture2D inputTexture;
+	static Material wireframeMaterial;
 
 	public Strand(){
 		controlPoints = new List<Vector3>();
 		controlNormals = new List<Vector3>();
 
-		texture = "GUI/blue_pellet";
-		inputTexture = (Texture2D)Resources.Load(texture);
+		inputTexture = (Texture2D)Resources.Load("GUI/blue_pellet");
+		wireframeMaterial = (Material)Resources.Load("GUI/wireframe_material");
 	}
 
 	public void AddControlPointAndNormal(Vector3 controlPoint, Vector3 controlNormal){
@@ -28,25 +28,30 @@ public class Strand {
 	}
 
 	public void drawWireframeToGUI(){
+		// Drawing Wireframe
+		GL.PushMatrix();
+			// might still need this...?
+			// GL.MultMatrix(gameObject.transform.localToWorldMatrix);
+			wireframeMaterial.SetPass(0);
+			GL.Begin(GL.LINES);
+				for(int i = 1; i < controlPoints.Count; ++i){
+					GL.Vertex(controlPoints[i-1]);
+					GL.Vertex(controlPoints[i]);
+					Debug.Log((i - 1) + "-->" + i);
+				}
+			GL.End();
+		GL.PopMatrix();
 
-		Mesh mesh = new Mesh();
-		mesh.vertices = new Vector3[controlPoints.Count];
-		mesh.triangles = new int[controlPoints.Count * 3];
-		mesh.colors = new Color[controlPoints.Count];
-
+		// Drawing Pellet
 		for(int i=0; i < controlPoints.Count; ++i){
 			Vector3 screenPos = Camera.current.WorldToScreenPoint(controlPoints[i]);
-			GUI.DrawTexture(new Rect(screenPos.x - 3, Screen.height - screenPos.y - 40, 5, 5), inputTexture);
+			Vector3 screenCoords = getTrueScreenCoordinates(screenPos);
 
-			mesh.vertices[i] = controlPoints[i];
-			mesh.colors[i] = Color.black;
-			if(i > 0){
-				mesh.triangles[i + 0] = i;
-				mesh.triangles[i + 1] = i - 1;
-				mesh.triangles[i + 2] = i;
-			}
+			GUI.DrawTexture(new Rect(screenCoords.x, screenCoords.y, 5, 5), inputTexture);
 		}
+	}
 
-		Graphics.DrawMeshNow(mesh, new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0));
+	static public Vector2 getTrueScreenCoordinates(Vector3 screenPosition){
+		return new Vector2(screenPosition.x - 3, Screen.height - screenPosition.y - 40);
 	}
 }
