@@ -68,8 +68,6 @@
 		float _metal3;
 		float _gloss3;
 
-
-
 		struct Input {
 			float2 uv_diff0;
 			float2 uv_mask1;
