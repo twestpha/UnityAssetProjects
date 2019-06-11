@@ -1,4 +1,6 @@
-﻿Shader "Hidden/CRTDisplayShader"
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+Shader "Hidden/CRTDisplayShader"
 {
 	Properties {
 		_MainTex ("Texture", 2D) = "white" {}
@@ -28,7 +30,7 @@
 
 			v2f vert(appdata v){
 				v2f o;
-				o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);
+				o.vertex = UnityObjectToClipPos(v.vertex);
 				o.uv = v.uv;
 				o.screenPos = ComputeScreenPos(o.vertex);
 				return o;
